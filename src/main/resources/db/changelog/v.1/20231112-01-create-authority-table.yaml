@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20231112-01
+      author: kbabayevv
+      comment: Create new authority table
+      changes:
+        - createTable:
+            tableName: authority
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: authorities_pkey
+                  name: id
+                  type: INT
+              - column:
+                  name: authority
+                  type: VARCHAR(255)
+
+

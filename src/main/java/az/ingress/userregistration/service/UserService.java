@@ -1,26 +1,52 @@
 package az.ingress.userregistration.service;
 
-import az.ingress.userregistration.dto.GetUserDto;
-import az.ingress.userregistration.dto.UserLoginDto;
-import az.ingress.userregistration.dto.UserRegisterDto;
-import az.ingress.userregistration.dto.UserResetPasswordDto;
+import az.ingress.userregistration.dto.request.UserRequest;
+import az.ingress.userregistration.dto.request.UserRequestResetPassword;
+import az.ingress.userregistration.dto.response.UserResponse;
+import az.ingress.userregistration.model.User;
+import az.ingress.userregistration.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Optional;
+
+import static az.ingress.userregistration.config.UserMapper.INSTANCE;
+
 @Service
-public interface UserService {
-    GetUserDto getUserById(Integer id);
+@RequiredArgsConstructor
+@Slf4j
+public class UserService {
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    List<GetUserDto> getAllUsers();
+    public UserResponse userRegister(UserRequest request) {
+        Optional<User> byUsernameExists = userRepository.findByUsername(request.getUsername());
+        if (byUsernameExists.isPresent()) {
+            throw new EntityNotFoundException("User already exists. Please, Try another username !");
+        } else {
+            User user = INSTANCE.mapUserRequestToUserEntity(request);
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+            User saved = userRepository.save(user);
+            return INSTANCE.mapEntityToUserResponse(saved);
+        }
+    }
 
-    void userRegister(UserRegisterDto userRegisterDto);
 
-    void userLogin(UserLoginDto userLoginDto);
+    public String userLogin() {
+        return "You are logged in successfully !";
+    }
 
-    void userResetPassword(UserResetPasswordDto userResetPasswordDto);
 
-    void deleteById(Integer id);
-
-    void deleteAllUsers();
+    public String userResetPassword(UserRequestResetPassword request) {
+        User user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new EntityNotFoundException("User not found"));
+        if (request.getPassword().equals(request.getConfirmPassword())) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+            userRepository.save(user);
+        } else return "Your confirm password doesn't match";
+        return "Your password is changed successfully !";
+    }
 
 }

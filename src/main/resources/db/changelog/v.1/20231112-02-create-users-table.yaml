@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20231112-02
+      author: kbabayevv
+      comment: Create new users table
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: users_pkey
+                  name: id
+                  type: INT
+              - column:
+                  name: username
+                  type: VARCHAR(255)
+              - column:
+                  name: password
+                  type: VARCHAR(255)
+
