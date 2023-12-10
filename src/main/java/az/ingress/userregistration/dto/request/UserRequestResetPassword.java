@@ -13,10 +13,6 @@ import lombok.experimental.FieldDefaults;
 public class UserRequestResetPassword {
 
     @NotEmpty
-    String username;
-
-
-    @NotEmpty
     @Size(min = 6, max = 100)
     String password;
 

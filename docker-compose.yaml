@@ -8,13 +8,13 @@ services:
       - '3306:3306'
     volumes:
       - my-db:/var/lib/mysql
-  application:
-    image: user-registration:v8
-    depends_on:
-      - mysql-db
-    environment:
-      DB_HOSTNAME: mysql-db
-      DB_PORT: 3306
+#  application:
+#    image: user-registration:v8
+#    depends_on:
+#      - mysql-db
+#    environment:
+#      DB_HOSTNAME: mysql-db
+#      DB_PORT: 3306
 
 volumes:
   my-db:

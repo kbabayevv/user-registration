@@ -26,6 +26,14 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
                 .build();
     }
 
+    @ExceptionHandler(value = RuntimeException.class)
+    public ExceptionResponse handle(RuntimeException runtimeException) {
+        return ExceptionResponse.builder()
+                .title(runtimeException.getMessage())
+                .status(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .build();
+    }
+
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         Map<String, String> errors = new HashMap<>();

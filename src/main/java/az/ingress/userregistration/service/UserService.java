@@ -5,6 +5,7 @@ import az.ingress.userregistration.dto.request.UserRequestResetPassword;
 import az.ingress.userregistration.dto.response.UserResponse;
 import az.ingress.userregistration.model.User;
 import az.ingress.userregistration.repository.UserRepository;
+import az.ingress.userregistration.util.SecurityUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,9 @@ import static az.ingress.userregistration.config.UserMapper.INSTANCE;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+
+
 
     public UserResponse userRegister(UserRequest request) {
         Optional<User> byUsernameExists = userRepository.findByUsername(request.getUsername());
@@ -41,11 +45,11 @@ public class UserService {
 
 
     public String userResetPassword(UserRequestResetPassword request) {
-        User user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new EntityNotFoundException("User not found"));
+        User user = userRepository.findByUsername(SecurityUtil.getLoggedUserId()).orElseThrow();
         if (request.getPassword().equals(request.getConfirmPassword())) {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
             userRepository.save(user);
-        } else return "Your confirm password doesn't match";
+        } else throw new RuntimeException("Your confirm password doesn't match");
         return "Your password is changed successfully !";
     }
 
